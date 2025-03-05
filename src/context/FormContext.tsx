@@ -120,7 +120,7 @@ const FormContext = createContext<FormContextType | undefined>(undefined);
 export const FormProvider = ({ children }: { children: ReactNode }) => {
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [currentStep, setCurrentStep] = useState(1);
-  const totalSteps = 6;
+  const totalSteps = 8; // Updated to include all steps
 
   const updateFormData = (data: Partial<FormData>) => {
     setFormData(prev => ({ ...prev, ...data }));

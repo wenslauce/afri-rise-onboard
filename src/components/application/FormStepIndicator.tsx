@@ -9,6 +9,7 @@ import {
   Info, 
   Globe, 
   ShoppingBag, 
+  FilePlus,
   Upload,
   CheckCircle2
 } from 'lucide-react';
@@ -19,7 +20,9 @@ const steps = [
   { label: 'Company Background', icon: Info },
   { label: 'Funding Background', icon: Globe },
   { label: 'Company Markets', icon: ShoppingBag },
-  { label: 'Final Details', icon: Upload },
+  { label: 'Final Details', icon: FilePlus },
+  { label: 'Documents', icon: Upload },
+  { label: 'Review', icon: CheckCircle2 },
 ];
 
 const FormStepIndicator = () => {
