@@ -1,191 +1,132 @@
 
-import React, { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { Menu, X, ChevronDown, User, LogOut } from "lucide-react";
+import React from "react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { Logo } from "@/components/Logo";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+} from "@/components/ui/navigation-menu";
 import { cn } from "@/lib/utils";
 
-interface NavLinkProps {
-  href: string;
-  children: React.ReactNode;
-  className?: string;
+interface NavbarProps {
+  transparent?: boolean;
 }
 
-const NavLink = ({ href, children, className }: NavLinkProps) => {
-  const location = useLocation();
-  const isActive = location.pathname === href;
-
-  return (
-    <Link
-      to={href}
-      className={cn(
-        "relative px-3 py-2 transition-colors hover:text-afririse-600",
-        isActive
-          ? "text-afririse-600 font-medium"
-          : "text-foreground/80",
-        className
-      )}
-    >
-      {children}
-      {isActive && (
-        <span className="absolute bottom-0 left-0 h-0.5 w-full bg-afririse-500 rounded-full" />
-      )}
-    </Link>
-  );
-};
-
-export const Navbar = () => {
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [user, setUser] = useState<{ name: string } | null>(null);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 10) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
-
-  // For demo, we'll simulate a login
-  const handleLogin = () => {
-    setUser({ name: "Demo User" });
-  };
-
-  const handleLogout = () => {
-    setUser(null);
-  };
-
+export const Navbar: React.FC<NavbarProps> = ({ transparent = false }) => {
   return (
     <header
       className={cn(
-        "fixed top-0 left-0 right-0 z-50 transition-all duration-300 ease-in-out",
-        isScrolled
-          ? "bg-white/70 backdrop-blur-lg shadow-sm py-3"
-          : "bg-transparent py-5"
+        "sticky top-0 z-50 w-full border-b",
+        transparent
+          ? "bg-background/50 backdrop-blur-lg border-transparent"
+          : "bg-background border-border"
       )}
     >
-      <div className="container flex items-center justify-between">
-        <Link
-          to="/"
-          className="flex items-center gap-2 text-2xl font-bold text-afririse-600"
-        >
-          <span className="bg-afririse-500 text-white px-2 py-1 rounded-md">Afri</span>
-          <span>Rise</span>
-        </Link>
-
-        <nav className="hidden md:flex items-center space-x-1">
-          <NavLink href="/">Home</NavLink>
-          <NavLink href="/application">Apply</NavLink>
-          {user && <NavLink href="/dashboard">Dashboard</NavLink>}
-          <NavLink href="#about">About</NavLink>
-          <NavLink href="#contact">Contact</NavLink>
-        </nav>
-
-        <div className="hidden md:flex items-center space-x-4">
-          {user ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  className="flex items-center gap-2 hover:bg-afririse-50"
-                >
-                  <span>{user.name}</span>
-                  <ChevronDown size={16} />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56 mr-2" align="end">
-                <DropdownMenuItem className="cursor-pointer">
-                  <User className="mr-2 h-4 w-4" />
-                  <span>Profile</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link to="/dashboard" className="cursor-pointer">
-                    Dashboard
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
-                  <LogOut className="mr-2 h-4 w-4" />
-                  <span>Log out</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          ) : (
-            <>
-              <Button variant="ghost" onClick={handleLogin}>
-                Log in
-              </Button>
-              <Button onClick={handleLogin}>Sign up</Button>
-            </>
-          )}
+      <div className="container flex h-16 items-center justify-between">
+        <div className="flex items-center gap-6">
+          <Logo className="h-8" />
+          
+          <NavigationMenu className="hidden md:block">
+            <NavigationMenuList>
+              <NavigationMenuItem>
+                <NavigationMenuTrigger>Solutions</NavigationMenuTrigger>
+                <NavigationMenuContent>
+                  <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
+                    {solutions.map((solution) => (
+                      <ListItem
+                        key={solution.title}
+                        title={solution.title}
+                        href={solution.href}
+                      >
+                        {solution.description}
+                      </ListItem>
+                    ))}
+                  </ul>
+                </NavigationMenuContent>
+              </NavigationMenuItem>
+              <NavigationMenuItem>
+                <Link to="/about" legacyBehavior passHref>
+                  <NavigationMenuLink className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50">
+                    About
+                  </NavigationMenuLink>
+                </Link>
+              </NavigationMenuItem>
+              <NavigationMenuItem>
+                <Link to="/contact" legacyBehavior passHref>
+                  <NavigationMenuLink className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50">
+                    Contact
+                  </NavigationMenuLink>
+                </Link>
+              </NavigationMenuItem>
+            </NavigationMenuList>
+          </NavigationMenu>
         </div>
-
-        <button
-          className="md:hidden"
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-        >
-          {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
+        
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
+          <Button variant="outline" asChild>
+            <Link to="/dashboard">Dashboard</Link>
+          </Button>
+          <Button asChild>
+            <Link to="/application">Apply Now</Link>
+          </Button>
+        </div>
       </div>
-
-      {/* Mobile menu */}
-      {mobileMenuOpen && (
-        <div className="fixed inset-0 top-16 bg-background z-40 p-4 md:hidden animate-fadeIn">
-          <nav className="flex flex-col space-y-4 p-4">
-            <Link to="/" className="py-2 text-lg" onClick={() => setMobileMenuOpen(false)}>
-              Home
-            </Link>
-            <Link to="/application" className="py-2 text-lg" onClick={() => setMobileMenuOpen(false)}>
-              Apply
-            </Link>
-            {user && (
-              <Link to="/dashboard" className="py-2 text-lg" onClick={() => setMobileMenuOpen(false)}>
-                Dashboard
-              </Link>
-            )}
-            <Link to="#about" className="py-2 text-lg" onClick={() => setMobileMenuOpen(false)}>
-              About
-            </Link>
-            <Link to="#contact" className="py-2 text-lg" onClick={() => setMobileMenuOpen(false)}>
-              Contact
-            </Link>
-          </nav>
-          <div className="mt-8 flex flex-col space-y-4">
-            {user ? (
-              <>
-                <div className="py-2 px-4 bg-afririse-50 rounded-md">
-                  <p className="font-medium">{user.name}</p>
-                </div>
-                <Button variant="outline" onClick={handleLogout}>
-                  Log out
-                </Button>
-              </>
-            ) : (
-              <>
-                <Button variant="outline" onClick={handleLogin}>
-                  Log in
-                </Button>
-                <Button onClick={handleLogin}>Sign up</Button>
-              </>
-            )}
-          </div>
-        </div>
-      )}
     </header>
   );
 };
+
+const ListItem = React.forwardRef<
+  React.ElementRef<"a">,
+  React.ComponentPropsWithoutRef<"a">
+>(({ className, title, children, ...props }, ref) => {
+  return (
+    <li>
+      <NavigationMenuLink asChild>
+        <a
+          ref={ref}
+          className={cn(
+            "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
+            className
+          )}
+          {...props}
+        >
+          <div className="text-sm font-medium leading-none">{title}</div>
+          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+            {children}
+          </p>
+        </a>
+      </NavigationMenuLink>
+    </li>
+  );
+});
+ListItem.displayName = "ListItem";
+
+const solutions = [
+  {
+    title: "Business Loans",
+    href: "#",
+    description: "Secure financing for your business needs with competitive rates."
+  },
+  {
+    title: "Project Financing",
+    href: "#",
+    description: "Get funding for specific projects or expansions in African markets."
+  },
+  {
+    title: "Working Capital",
+    href: "#",
+    description: "Access flexible working capital to manage your day-to-day operations."
+  },
+  {
+    title: "Equipment Financing",
+    href: "#",
+    description: "Finance new equipment and technology to grow your business."
+  },
+];
