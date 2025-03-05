@@ -87,9 +87,7 @@ const FormStepIndicator = () => {
             "h-8 w-8 rounded-full flex items-center justify-center transition-colors",
             "bg-primary text-primary-foreground"
           )}>
-            {steps[currentStep - 1].icon && (
-              <steps[currentStep - 1].icon className="h-4 w-4" />
-            )}
+            {React.createElement(steps[currentStep - 1].icon, { className: "h-4 w-4" })}
           </div>
           <div>
             <p className="text-sm text-muted-foreground">Step {currentStep} of {steps.length}</p>
