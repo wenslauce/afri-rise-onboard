@@ -1,132 +1,103 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { Logo } from "@/components/Logo";
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-} from "@/components/ui/navigation-menu";
+import { useTheme } from "next-themes";
+import { Moon, Sun, Menu, X } from "lucide-react";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
+import { useMediaQuery } from "@/hooks/use-mobile";
 
-interface NavbarProps {
-  transparent?: boolean;
-}
+const navItems = [
+  { name: "Home", href: "/" },
+  { name: "Apply Now", href: "/application" },
+  { name: "Dashboard", href: "/dashboard" }
+];
 
-export const Navbar: React.FC<NavbarProps> = ({ transparent = false }) => {
+export const Navbar = () => {
+  const { theme, setTheme } = useTheme();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const isMobile = useMediaQuery("(max-width: 768px)");
+
+  const toggleTheme = () => {
+    setTheme(theme === "light" ? "dark" : "light");
+  };
+
   return (
-    <header
-      className={cn(
-        "sticky top-0 z-50 w-full border-b",
-        transparent
-          ? "bg-background/50 backdrop-blur-lg border-transparent"
-          : "bg-background border-border"
-      )}
-    >
+    <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between">
-        <div className="flex items-center gap-6">
-          <Logo className="h-8" />
-          
-          <NavigationMenu className="hidden md:block">
-            <NavigationMenuList>
-              <NavigationMenuItem>
-                <NavigationMenuTrigger>Solutions</NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-                    {solutions.map((solution) => (
-                      <ListItem
-                        key={solution.title}
-                        title={solution.title}
-                        href={solution.href}
-                      >
-                        {solution.description}
-                      </ListItem>
-                    ))}
-                  </ul>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
-              <NavigationMenuItem>
-                <Link to="/about" legacyBehavior passHref>
-                  <NavigationMenuLink className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50">
-                    About
-                  </NavigationMenuLink>
+        <Logo className="h-8 md:h-10" />
+        
+        {isMobile ? (
+          <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" className="md:hidden">
+                <Menu className="h-5 w-5" />
+                <span className="sr-only">Toggle menu</span>
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right" className="w-[300px] p-0 pt-10">
+              <nav className="grid gap-2 p-4">
+                {navItems.map((item) => (
+                  <Link
+                    key={item.name}
+                    to={item.href}
+                    className={cn(
+                      "flex w-full items-center rounded-md px-4 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground"
+                    )}
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    {item.name}
+                  </Link>
+                ))}
+                <Link
+                  to="/login"
+                  className={cn(
+                    "mt-2 flex w-full items-center rounded-md px-4 py-2 text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90"
+                  )}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Login
                 </Link>
-              </NavigationMenuItem>
-              <NavigationMenuItem>
-                <Link to="/contact" legacyBehavior passHref>
-                  <NavigationMenuLink className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50">
-                    Contact
-                  </NavigationMenuLink>
-                </Link>
-              </NavigationMenuItem>
-            </NavigationMenuList>
-          </NavigationMenu>
-        </div>
+              </nav>
+            </SheetContent>
+          </Sheet>
+        ) : (
+          <nav className="flex items-center gap-6">
+            {navItems.map((item) => (
+              <Link
+                key={item.name}
+                to={item.href}
+                className="text-sm font-medium transition-colors hover:text-primary"
+              >
+                {item.name}
+              </Link>
+            ))}
+          </nav>
+        )}
         
         <div className="flex items-center gap-2">
-          <ThemeToggle />
-          <Button variant="outline" asChild>
-            <Link to="/dashboard">Dashboard</Link>
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label="Toggle Theme"
+            onClick={toggleTheme}
+          >
+            {theme === "dark" ? (
+              <Sun className="h-[1.2rem] w-[1.2rem]" />
+            ) : (
+              <Moon className="h-[1.2rem] w-[1.2rem]" />
+            )}
           </Button>
-          <Button asChild>
-            <Link to="/application">Apply Now</Link>
-          </Button>
+          
+          {!isMobile && (
+            <Button asChild className="ml-4">
+              <Link to="/login">Login</Link>
+            </Button>
+          )}
         </div>
       </div>
     </header>
   );
 };
-
-const ListItem = React.forwardRef<
-  React.ElementRef<"a">,
-  React.ComponentPropsWithoutRef<"a">
->(({ className, title, children, ...props }, ref) => {
-  return (
-    <li>
-      <NavigationMenuLink asChild>
-        <a
-          ref={ref}
-          className={cn(
-            "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
-            className
-          )}
-          {...props}
-        >
-          <div className="text-sm font-medium leading-none">{title}</div>
-          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-            {children}
-          </p>
-        </a>
-      </NavigationMenuLink>
-    </li>
-  );
-});
-ListItem.displayName = "ListItem";
-
-const solutions = [
-  {
-    title: "Business Loans",
-    href: "#",
-    description: "Secure financing for your business needs with competitive rates."
-  },
-  {
-    title: "Project Financing",
-    href: "#",
-    description: "Get funding for specific projects or expansions in African markets."
-  },
-  {
-    title: "Working Capital",
-    href: "#",
-    description: "Access flexible working capital to manage your day-to-day operations."
-  },
-  {
-    title: "Equipment Financing",
-    href: "#",
-    description: "Finance new equipment and technology to grow your business."
-  },
-];
