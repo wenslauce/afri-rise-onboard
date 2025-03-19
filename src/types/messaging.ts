@@ -4,7 +4,8 @@ export type UserRole = "client" | "reviewer" | "admin";
 export interface User {
   id: string;
   role: UserRole;
-  name?: string;
+  name: string; // Making name required instead of optional
+  avatar?: string; // Adding avatar as optional for UI purposes
 }
 
 export interface Message {
