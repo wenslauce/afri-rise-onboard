@@ -37,6 +37,9 @@ export type FormData = {
   loanTerm: string;
   loanDate: Date | null;
   
+  // Application reference
+  applicationId?: string;
+  
   // Documents
   documents: {
     projectSummary: File | null;
@@ -98,6 +101,9 @@ const initialFormData: FormData = {
   interestRate: '',
   loanTerm: '',
   loanDate: null,
+  
+  // Application reference
+  applicationId: undefined,
   
   // Documents
   documents: {
